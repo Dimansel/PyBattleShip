@@ -6,17 +6,17 @@ from random import randint
 class Ship:        #the class is describing "ship" objects
     def __init__(self, row, col, width, height, parent, color, hidden = False):
         self.parent = parent        #needed to have an access to some variables in game
-        self.color = color              #color of the ship
-        self.row = row                  #coordinates
-        self.col = col                     #in the grid
-        self.width = width           #width and
-        self.height = height         #height of the ship (measured in grid cells)
-        self.dead = False              #indicates wether ship is dead or not
-        self.wounds = []               #list of hits
-        self.lines = []                     #stores lines that is painted to show "wounded" places
-        self.hidden = hidden       #indicates wether ship is hidden or not
-        self.rect = None               #rectangle. painted to display not hidden ship
-        self.redraw()                    #clears all and paints it again
+        self.color = color          #color of the ship
+        self.row = row              #coordinates
+        self.col = col              #in the grid
+        self.width = width          #width and
+        self.height = height        #height of the ship (measured in grid cells)
+        self.dead = False           #indicates wether ship is dead or not
+        self.wounds = []            #list of hits
+        self.lines = []             #stores lines that is painted to show "wounded" places
+        self.hidden = hidden        #indicates wether ship is hidden or not
+        self.rect = None            #rectangle. painted to display not hidden ship
+        self.redraw()               #clears all and paints it again
 
     def delete(self):
         for line in self.lines:
@@ -53,9 +53,9 @@ class Ship:        #the class is describing "ship" objects
     
     def redraw(self):
         self.parent.canvas.delete(self.rect)            #delete rectangle
-        for line in self.lines:                                      #delete all the lines
+        for line in self.lines:                         #delete all the lines
             self.parent.canvas.delete(line)
-        for wound in self.wounds:                          #paint "crosses" in places of "wounds"
+        for wound in self.wounds:                       #paint "crosses" in places of "wounds"
             x1 = wound[1]*self.parent.cell_size
             y1 = wound[0]*self.parent.cell_size
             cs = self.parent.cell_size
@@ -73,8 +73,8 @@ class BattleShip(Frame):
     def __init__(self, master = None):
         Frame.__init__(self, master)
         self.master.resizable(width = False, height = False)
-        self.pack()                                                       #using the "pack" layout manager
-        self.cell_size = 50                                           #width (height) of the cell
+        self.pack()                                           #using the "pack" layout manager
+        self.cell_size = 50                                   #width (height) of the cell
         self.master.title('BattleShip')                       #title of the window
         self.qns = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]             #list of the ships' widths
         self.currentShip = None
@@ -82,13 +82,13 @@ class BattleShip(Frame):
         self.hits = []
         self.uShips = []
         self.bShips = []
-        self.color = 'blue'                          #color of the grid, digits, letters and ships
-        self.cantStayColor = 'red'            #color of the current ship if it can't stay at it's current position
+        self.color = 'blue'                  #color of the grid, digits, letters and ships
+        self.cantStayColor = 'red'           #color of the current ship if it can't stay at it's current position
         self.canStayColor = 'green'          #color of the current ship if it can stay at it's current position
-        self.hitsColor = 'red'                     #color of "hits" and "missed shots"
-        self.createCanvas()                       #creating Canvas and binding events to it
-        self.drawGrid()                              #drawing grid with digits and letters
-        self.initGame()                              #initializes new game; i.e., sets all the variables to their's initial values and deleting ships on the Canvas
+        self.hitsColor = 'red'               #color of "hits" and "missed shots"
+        self.createCanvas()                  #creating Canvas and binding events to it
+        self.drawGrid()                      #drawing grid with digits and letters
+        self.initGame()                      #initializes new game; i.e., sets all the variables to their's initial values and deleting ships on the Canvas
 
     def createCanvas(self):
         self.canvas = Canvas(self, width = 24*self.cell_size, height = 12*self.cell_size)
@@ -109,21 +109,21 @@ class BattleShip(Frame):
         self.canvas.create_rectangle(13*self.cell_size, self.cell_size, 23*self.cell_size, 11*self.cell_size, outline = self.color, width = 3)
 
     def initGame(self, ev = None):
-        self.status = 1                                                        #0 - game is inactive, 1 - user is placing ships, 2 - game is active
-        self.turn = 0                                                           #0 - user, 1 - Bot
-        self.sdead = [0, 0]                                                  #number of destroyed ship. user's and Bot's respectively
-        self.deleteAll()                                                       #deletes all the dots (missed shots), ships and current ship (if user hasn't completed ship placing)
-        self.dots = []                                                           #stores missed shot object (Canvas create_oval method result)
-        self.hits = []                                                            #stores grid coordinates of all shots
-        self.wd = (i for i in self.qns)                                  #generator that generates sequence of ship's sizes (4, 3, 3, 2, 2, 2, 1, 1, 1, 1)
+        self.status = 1                                       #0 - game is inactive, 1 - user is placing ships, 2 - game is active
+        self.turn = 0                                         #0 - user, 1 - Bot
+        self.sdead = [0, 0]                                   #number of destroyed ship. user's and Bot's respectively
+        self.deleteAll()                                      #deletes all the dots (missed shots), ships and current ship (if user hasn't completed ship placing)
+        self.dots = []                                        #stores missed shot object (Canvas create_oval method result)
+        self.hits = []                                        #stores grid coordinates of all shots
+        self.wd = (i for i in self.qns)                       #generator that generates sequence of ship's sizes (4, 3, 3, 2, 2, 2, 1, 1, 1, 1)
         #next 4 variables needed for simple "intelligence" of the Bot
-        self.enemyFound = False                                      #indicates wether Bot has shot a user's ship, but not killed. if has this variable stores the first shot
-        self.cway = (0, 0)                                                    #current way for next shot (offset of previous shot)
-        self.lshot = False                                                    #coordinates of last shot if was successful, otherwise remains "False"
-        self.ways = [(-1, 0), (1, 0), (0, 1), (0, -1)]              #possible ways for next shot
-        self.currentShip = None                                        #when user is placing his ships this variable stores current ship that will be placed
-        self.uShips = []                                                        #contains all the user's ships
-        self.bShips = []                                                        #contains all the Bot's ships
+        self.enemyFound = False                               #indicates wether Bot has shot a user's ship, but not killed. if has this variable stores the first shot
+        self.cway = (0, 0)                                    #current way for next shot (offset of previous shot)
+        self.lshot = False                                    #coordinates of last shot if was successful, otherwise remains "False"
+        self.ways = [(-1, 0), (1, 0), (0, 1), (0, -1)]        #possible ways for next shot
+        self.currentShip = None                               #when user is placing his ships this variable stores current ship that will be placed
+        self.uShips = []                                      #contains all the user's ships
+        self.bShips = []                                      #contains all the Bot's ships
 
     def deleteAll(self):
         if self.currentShip != None: self.currentShip.delete()
@@ -166,8 +166,8 @@ class BattleShip(Frame):
     #randomly places ships on the Bot's field
     def placeBotShips(self):
         for i in self.qns:        #first of all, for each size of ship (4, 3, 3, 2, 2, 2, 1, 1, 1, 1) generate random rotation of the ship
-            available = []         #then for each cell of the Bot's filed check if ship with this rotation, width and height can stay at this cell and add this cell to available if can
-            k = randint(0, 1)
+            available = []        #then for each cell of the Bot's filed check if ship with this
+            k = randint(0, 1)     #rotation, width and height can stay at this cell and add this cell to "available" if can
             for a in range(13, 23):
                 for b in range(1, 11):
                     test = Ship(b, a, [i, 1][k], [i, 1][1-k], self, self.color, True)
@@ -197,18 +197,18 @@ class BattleShip(Frame):
         k = 1 if user else 0
         for ship in ships:
             if ship.hit(hity, hitx):        #for each ship in the list checks point at (hitx, hity) "hits" a ship
-                if not user:                    #this shot was made by Bot
+                if not user:                #this shot was made by Bot
                     if not self.enemyFound: self.enemyFound = (hitx, hity)        #the first successful hit after last killing (if was)
-                    else: self.lshot = (hitx, hity)                                                        #the last succesful hit
+                    else: self.lshot = (hitx, hity)                               #the last succesful hit
                 if ship.dead:
                     if not user:
                         self.enemyFound = False        #this ship was killed so Bot don't need to remember first and last hits anymore
                         self.lshot = False
                         self.ways = [(-1, 0), (1, 0), (0, 1), (0, -1)]        #restore possible ways
-                    self.sdead[k] += 1        #increase the number of killed ships
+                    self.sdead[k] += 1                     #increase the number of killed ships
                     if self.sdead[k] == len(ships):        #if number if killed ships equal to number of all opponent's ship game is over
-                        self.status = 0
-                        for shp in self.bShips:        #show all the hidden Bot's ships
+                        self.status = 0                    #set game status to inactive
+                        for shp in self.bShips:            #show all the hidden Bot's ships
                             shp.hidden = False
                             shp.redraw()
                         self.gameOver(user)        #show "game over" messagebox
@@ -242,11 +242,11 @@ class BattleShip(Frame):
             if self.lshot:        #if the last shot was successful try to make next show in the same "way"
                 way = (self.lshot[0]+self.cway[0], self.lshot[1]+self.cway[1])
             if way not in available and (-self.cway[0], -self.cway[1]) in self.ways:        #if last shot was missed or next shot in the same "way" is not available
-                self.cway = (-self.cway[0], -self.cway[1])                                                     #it's obvious that we need to make a shot in opposite "way" in this case
+                self.cway = (-self.cway[0], -self.cway[1])                                  #try to make a shot in opposite "way" in this case
                 self.ways.remove(self.cway)
                 way = (self.enemyFound[0]+self.cway[0], self.enemyFound[1]+self.cway[1])
             while way not in available:        #here we're getting first available "way" if opposite is unavailable
-                self.cway = choice(self.ways) #after choosing a "way" simply make a shot
+                self.cway = choice(self.ways)  #after choosing a "way" simply make a shot
                 way = (self.enemyFound[0]+self.cway[0], self.enemyFound[1]+self.cway[1])
                 self.ways.remove(self.cway)
             self.shot(way[0], way[1], self.uShips, False)
